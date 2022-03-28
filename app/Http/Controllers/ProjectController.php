@@ -58,9 +58,11 @@ class ProjectController extends Controller
         $reg->nombre= $request->get('nombre');
         $reg->observacion= $request->get('observacion');
         if($request->hasFile('archivo')){
+            $nombre = uniqid();
                 $pdf = $request->file('archivo');
-                $pdf->move(public_path().'/Archivos/' , $pdf->getClientOriginalName());
-                $reg->archivo = $pdf->getClientOriginalName();
+                $extension = $this->obtenerExtension($pdf->getClientOriginalExtension());
+                $pdf->move(public_path().'/Archivos/' , $nombre . $extension);
+                $reg->archivo = $nombre . $extension;
                }
         $reg->save();
 
@@ -124,4 +126,12 @@ class ProjectController extends Controller
         $project->delete();
         return redirect()->route('projects.index')->with('error' , 'Documento Eliminando con exito!');
     }
+
+    public function obtenerExtension($nombre_archivo)
+    {
+        $array = explode(".",$nombre_archivo);
+        return '.' . $array[sizeof($array)-1];# code...
+    }
+
 }
+
